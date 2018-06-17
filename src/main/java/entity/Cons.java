@@ -1,6 +1,6 @@
 package entity;
 
-public class Cons implements Comparable<Cons>{
+public class Cons implements Comparable<Cons> {
 
     private final Character value;
     private final Cons nextCons;
@@ -8,6 +8,18 @@ public class Cons implements Comparable<Cons>{
     public Cons(Character value, Cons nextCons) {
         this.value = value;
         this.nextCons = nextCons;
+    }
+
+    ////////////////////
+    //
+    // Accessors
+
+    public Character getValue() {
+        return value;
+    }
+
+    public Cons getNextCons() {
+        return nextCons;
     }
 
     ////////////////////
@@ -25,10 +37,10 @@ public class Cons implements Comparable<Cons>{
     }
 
     public Integer findLengths() {
-        if (this.getValue() == null ) return 0;
-        if (this.getValue() != null && this.getNextCons() == null ) return 1;
+        if (this.getValue() == null) return 0;
+        if (this.getValue() != null && this.getNextCons() == null) return 1;
         final int counter = 1;
-        return countConsLength(this.getNextCons(),counter);
+        return countConsLength(this.getNextCons(), counter);
     }
 
     private Integer countConsLength(Cons cons, Integer counter) {
@@ -37,12 +49,12 @@ public class Cons implements Comparable<Cons>{
     }
 
 
-    public Character getValue() {
-        return value;
-    }
+    public int compareTo(Cons o) {
+        if (value == null) return 1;
+        if (o.getValue() == null) return -1;
+        if (value.equals(o.getValue())) return 0;
 
-    public Cons getNextCons() {
-        return nextCons;
+        return value.compareTo(o.getValue());
     }
 
     @Override
@@ -52,11 +64,4 @@ public class Cons implements Comparable<Cons>{
                 ", nextCons=" + nextCons +
                 '}';
     }
-
-    public int compareTo(Cons o) {
-        if (value == null) return 1;
-        if (o.getValue() == null) return -1;
-
-        return value.compareTo(o.getValue());
-}
 }
