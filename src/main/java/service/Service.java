@@ -30,6 +30,41 @@ public class Service {
 
     }
 
+    public Cons sort(Cons cons) {
+        if (cons == null) return null;
+
+        final Character value = cons.getValue();
+
+
+        return null;
+    }
+
+    private Cons iterate(Cons cons, Character value) {
+
+        if (value.equals(cons.getValue())) return cons;
+        if (!value.equals(cons.getValue()) && cons.getNextCons() == null) throw new RuntimeException("No value found");
+        return iterate(cons.getNextCons(),value);
+    }
+
+
+
+    //////
+    // Utils
+    private Cons convertText(Cons cons, String text) {
+        if (StringUtils.isEmpty(text)) return cons;
+
+        final Cons newCons = new Cons(text.charAt(text.length() - 1), cons);
+        return convertText(newCons, text.substring(0, text.length() - 1));
+    }
+
+    private boolean convertToBoolean(int result) {
+        switch (result) {
+            case 1 : return true;
+            case -1 : return false;
+            default: return false;
+        }
+    }
+
     private Cons findSmallerCons(Cons cons1, Cons cons2) {
         return cons1.isLess(cons2) ? cons1 : cons2;
     }
@@ -59,22 +94,5 @@ public class Service {
         final Integer consOneLength = cons1.findLengths();
         final Integer consTwoLength = cons2.findLengths();
         return consOneLength.equals(consTwoLength);
-    }
-
-    //////
-    // Utils
-    private Cons convertText(Cons cons, String text) {
-        if (StringUtils.isEmpty(text)) return cons;
-
-        final Cons newCons = new Cons(text.charAt(text.length() - 1), cons);
-        return convertText(newCons, text.substring(0, text.length() - 1));
-    }
-
-    private boolean convertToBoolean(int result) {
-        switch (result) {
-            case 1 : return true;
-            case -1 : return false;
-            default: return false;
-        }
     }
 }

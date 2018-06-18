@@ -19,6 +19,13 @@ public class Main {
         System.out.println("Cons2 is more than cons1 -- " + cons2.isMore(cons1));
 
         final boolean result = service.checkIsFirst(cons1, cons2);
-        System.out.println(result);
+        System.out.println("cons1 is first -- " +  result);
+
+        final Cons bubbleSortedCons = service.sort(cons1);
+
+        System.out.println(bubbleSortedCons);
+
+
+
     }
 }
