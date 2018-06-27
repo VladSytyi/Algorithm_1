@@ -33,18 +33,100 @@ public class Service {
     public Cons sort(Cons cons) {
         if (cons == null) return null;
 
-        final Character value = cons.getValue();
+        final Cons earliestInAlphabet = findTheEarliestInAlphabet(cons);
+
 
 
         return null;
     }
 
-    private Cons iterate(Cons cons, Character value) {
+    public Cons removeCons(Cons cons, Cons removalCons) {
+        if (cons.getNextCons() == null) return cons;
 
-        if (value.equals(cons.getValue())) return cons;
-        if (!value.equals(cons.getValue()) && cons.getNextCons() == null) throw new RuntimeException("No value found");
-        return iterate(cons.getNextCons(),value);
+        if (cons.getNextCons().getValue().equals(removalCons.getValue())) {
+           // final  Cons newCons = new Cons(cons.getValue() , cons.getNextCons().getNextCons());
+            removeCons( new Cons(cons.getValue(), cons.getNextCons().getNextCons()) , removalCons);
+        }
+        return removeCons(cons.getNextCons(), removalCons);
     }
+
+    public Cons findConsWhereNextIsRemoval(Cons cons, Cons removalCons) {
+        if (cons.getNextCons() == null) return cons;
+
+        if (cons.getNextCons().getValue().equals(removalCons.getValue())) {
+            return cons;
+        }
+
+        return findConsWhereNextIsRemoval(cons.getNextCons(), removalCons);
+    }
+
+
+//    private void change(Cons comparable, Cons cons) {
+//        final Cons comparableWithNext = new Cons(comparable.getValue(), cons.getNextCons());
+//        final Cons replacedCons = new Cons( cons.getValue() , comparableWithNext);
+//
+//    }
+
+//    private void sortInner(Cons cons) {
+//    }
+
+//    public Cons sort(Cons cons) {
+//        if (cons == null) return null;
+//        Cons acc = null;
+//        return sortIner(cons, acc);
+//    }
+//
+//    public Cons sortIner(Cons cons, Cons acc) {
+//        if (cons.getNextCons() == null) return acc;
+//
+//        if (valueIsEarlierInAlphabet(cons)) {
+//            acc = change(cons);
+//            final Cons newC = new Cons( acc.getValue() ,  change(cons));
+//
+//            sortIner(cons.getNextCons(), newC);
+//        } else  {
+//            acc = new Cons(cons.getValue() , cons.getNextCons());
+//            sortIner(cons.getNextCons(), acc);
+//        }
+//
+//        return acc;
+//    }
+//
+//
+//
+    public Cons findTheEarliestInAlphabet(Cons cons) {
+        if (cons.getNextCons() == null) return cons;
+
+        return valueIsEarlierInAlphabet(cons) ? findTheEarliestInAlphabet( change(cons) )
+                                              : findTheEarliestInAlphabet( cons.getNextCons() );
+    }
+
+    private Cons change (Cons cons) {
+        if (cons.getNextCons() == null) return cons;
+
+        final Cons temp = cons.getNextCons();
+        final Cons newCons = new Cons(cons.getValue(), temp.getNextCons());
+
+        return new Cons(temp.getValue(), newCons);
+    }
+
+    private boolean valueIsEarlierInAlphabet(Cons cons) {
+        if (cons.getNextCons() == null) return false;
+        final int res = cons.compareTo(cons.getNextCons());
+
+        if (res > 0) return false;
+        if (res < 0) return true;
+
+        return false;
+
+    }
+
+//    private Cons iterate(Cons cons, Character value) {
+//
+//        if (value.equals(cons.getValue())) return cons;
+//        if (!value.equals(cons.getValue()) && cons.getNextCons() == null) throw new RuntimeException("No value found");
+//        return iterate(cons.getNextCons(),value);
+//    }
 
 
 
@@ -61,7 +143,7 @@ public class Service {
         switch (result) {
             case 1 : return true;
             case -1 : return false;
-            default: return false;
+            default : return false;
         }
     }
 
@@ -95,4 +177,10 @@ public class Service {
         final Integer consTwoLength = cons2.findLengths();
         return consOneLength.equals(consTwoLength);
     }
+
+    /**
+     * The compare(char x, char y) method of Character class returns the value 0 if x == y;
+     * a value less than 0 if x < y;
+     * and a value greater than 0 if x > y.
+     */
 }

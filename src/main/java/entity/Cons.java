@@ -50,12 +50,18 @@ public class Cons implements Comparable<Cons> {
 
 
     public int compareTo(Cons o) {
+        /**
+         * The compare(char x, char y) method of Character class returns the value 0 if x == y;
+         * a value less than 0 if x < y;  ------    x - y < 0
+         * and a value greater than 0 if x > y.  ------ x - y > 0
+         */
         if (value == null) return 1;
         if (o.getValue() == null) return -1;
         if (value.equals(o.getValue())) return 0;
 
-        return value.compareTo(o.getValue());
+        return value - o.getValue();
     }
+
 
     @Override
     public String toString() {
