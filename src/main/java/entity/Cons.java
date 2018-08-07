@@ -22,6 +22,7 @@ public class Cons implements Comparable<Cons> {
         return nextCons;
     }
 
+
     ////////////////////
     //
     // Utils
@@ -48,7 +49,6 @@ public class Cons implements Comparable<Cons> {
         return countConsLength(cons.getNextCons(), ++counter);
     }
 
-
     public int compareTo(Cons o) {
         /**
          * The compare(char x, char y) method of Character class returns the value 0 if x == y;
@@ -70,4 +70,5 @@ public class Cons implements Comparable<Cons> {
                 ", nextCons=" + nextCons +
                 '}';
     }
+
 }

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Service {
 
+
     public Cons convertToCons(String text) {
         if (StringUtils.isEmpty(text)) return null;
 
@@ -30,75 +31,183 @@ public class Service {
 
     }
 
-    public Cons sort(Cons cons) {
+      /*
+    Sorting algorithm from A - Z
+    Thus we have Cons cells --> first we need to find out the latest in alphabet(will be as 'L') , to be the deepest element
+    Then after that we need to find an index of this Cons cell
+    Then we need to split cons cell in 2 parts : Head -- all prev cons of 'L'
+                                                 Tail -- all after of 'L'
+    Then we need to remove this Cons cell by   connecting Head + Tail
+    After update we repeat the operation
+    The process will be finished when the input Cons cell will be empty
+     */
+
+     public Cons sort (Cons cons) {
         if (cons == null) return null;
+        final Cons sortedCons = new Cons(null, null);
+        return sorting(sortedCons , cons);
+     }
 
-        final Cons earliestInAlphabet = findTheEarliestInAlphabet(cons);
+    private Cons sorting(Cons sortedCons, Cons cons) {
+        if (cons == null) return finalCons(sortedCons, cons);
+        final Cons theLatestInAlphabet = findTheLatestInAlphabet(cons);
+        final Cons updatedSortedCons = addToSortedCons(sortedCons , theLatestInAlphabet);
+        final Cons updatedCons = updateCons(theLatestInAlphabet , cons);
 
-
-
-        return null;
+        return sorting(updatedSortedCons , updatedCons);
     }
 
-    public Cons removeCons(Cons cons, Cons removalCons) {
-        if (cons.getNextCons() == null) return cons;
+    /**
+     *
+     * @param theLatestInAlphabet this cons with the value, which should be removed from input cons
+     * @param cons input Cons cell
+     * @return
+     * The algorithm is
+     * We search for an index of theLatestInAlphabet
+     * recreate Cons sequence without theLatestInAlphabet
+     * by connecting  head and tail without theLatestInAlphabet
+     */
+    private Cons updateCons(Cons theLatestInAlphabet, Cons cons) {
+        if (cons.getValue() == null) return theLatestInAlphabet;
 
-        if (cons.getNextCons().getValue().equals(removalCons.getValue())) {
-           // final  Cons newCons = new Cons(cons.getValue() , cons.getNextCons().getNextCons());
-            removeCons( new Cons(cons.getValue(), cons.getNextCons().getNextCons()) , removalCons);
+        final int indexOfTheLastOfAlphabet = findIndexOfConsByValue(theLatestInAlphabet.getValue(), cons);
+        final Cons prevCons = findConsHead(cons , indexOfTheLastOfAlphabet );
+        final Cons nextCons = findConsTail(cons , indexOfTheLastOfAlphabet );
+
+        return connectCons(prevCons , nextCons);
+    }
+
+    private Cons findConsTail(Cons cons, int indexOfTheLastOfAlphabet) {
+        final Cons c = findConsSeqByIndex(cons , indexOfTheLastOfAlphabet);
+        return c.getNextCons();
+    }
+
+    private Cons connectCons(Cons head, Cons tail) {
+        if (tail == null) return head;
+        if (head == null) return tail;
+        final int size = head.findLengths() - 1;
+        return connection(head, tail, size);
+    }
+
+
+    private Cons connection(Cons head, Cons finalCons, int step) {
+         if (step < 0) return finalCons;
+
+         final Cons headsCons = findConsByIndex(head , step);
+         final Cons connectedCons = new Cons(headsCons.getValue(), finalCons);
+
+         return connection(head,connectedCons, --step);
+    }
+
+    public Cons findConsHead(Cons cons, int index) {
+        int indexPrevCons = --index;
+        final Cons found = findConsByIndex(cons, indexPrevCons);
+        if (found == null) return null;
+        final Cons finalCons = new Cons(found.getValue(), null);
+        return findHead(finalCons, cons , --indexPrevCons);
+    }
+
+    private Cons findHead(Cons finalCons, Cons cons, int i) {
+        if (i < 0) return finalCons;
+
+        final Cons found = findConsByIndex(cons, i);
+        final Cons upd = new Cons(found.getValue(), finalCons);
+
+        return findHead(upd, cons, --i);
+    }
+
+    public int findIndexOfConsByValue(Character value, Cons cons) {
+        /**
+         * maybe here is needed to add additional check for value
+         * if this value isn't in  Cons cell --> return null or exception
+         */
+        int counter = -1;
+        return iterate(value, cons, counter);
+    }
+
+
+    public Cons findConsByIndex(Cons cons , Integer index) {
+         if (index < 0) {
+            // System.out.println("Index is above 0");
+             //return goNextCons(cons , 0);
+             return null;
+         }
+         if (index == 0) {
+             return new Cons(cons.getValue(), null);
+         }
+         if (index > cons.findLengths()) {
+             System.out.println("Index is more than size");
+             return null;
+         }
+
+        /**
+         * We need to wrap this depth, to not to lose any value of Cons cell
+         */
+        return goNextCons(cons , index);
+    }
+
+    public Cons findConsSeqByIndex(Cons cons , Integer index) {
+        if (index < 0) {
+            // System.out.println("Index is above 0");
+            //return goNextCons(cons , 0);
+            return null;
         }
-        return removeCons(cons.getNextCons(), removalCons);
-    }
-
-    public Cons findConsWhereNextIsRemoval(Cons cons, Cons removalCons) {
-        if (cons.getNextCons() == null) return cons;
-
-        if (cons.getNextCons().getValue().equals(removalCons.getValue())) {
+        if (index == 0) {
             return cons;
         }
-
-        return findConsWhereNextIsRemoval(cons.getNextCons(), removalCons);
+        if (index > cons.findLengths()) {
+          //  System.out.println("Index is more than size");
+            return null;
+        }
+        return nextCons(cons , index);
     }
 
+    private Cons addToSortedCons(Cons finalCons, Cons newCons) {
+        if (finalCons.getValue() == null && finalCons.getNextCons() == null)  {
+            return new Cons(newCons.getValue() , null);
+        }
 
-//    private void change(Cons comparable, Cons cons) {
-//        final Cons comparableWithNext = new Cons(comparable.getValue(), cons.getNextCons());
-//        final Cons replacedCons = new Cons( cons.getValue() , comparableWithNext);
-//
-//    }
+        return new Cons(newCons.getValue(), finalCons);
+    }
 
-//    private void sortInner(Cons cons) {
-//    }
+    private Cons finalCons(Cons sortedCons, Cons cons) {
+        if (cons == null) return sortedCons;
+        return new Cons(cons.getValue() , sortedCons);
+    }
 
-//    public Cons sort(Cons cons) {
-//        if (cons == null) return null;
-//        Cons acc = null;
-//        return sortIner(cons, acc);
-//    }
-//
-//    public Cons sortIner(Cons cons, Cons acc) {
-//        if (cons.getNextCons() == null) return acc;
-//
-//        if (valueIsEarlierInAlphabet(cons)) {
-//            acc = change(cons);
-//            final Cons newC = new Cons( acc.getValue() ,  change(cons));
-//
-//            sortIner(cons.getNextCons(), newC);
-//        } else  {
-//            acc = new Cons(cons.getValue() , cons.getNextCons());
-//            sortIner(cons.getNextCons(), acc);
-//        }
-//
-//        return acc;
-//    }
-//
-//
-//
-    public Cons findTheEarliestInAlphabet(Cons cons) {
+    private Cons goNextCons(Cons cons, Integer depth) {
+        if (cons == null) return null;
+        final Cons tmp = new Cons(cons.getValue(), null);
+        if (depth == 0) return tmp;
+        return goNextCons(cons.getNextCons() , --depth );
+    }
+
+    private Cons nextCons(Cons cons, Integer depth) {
+        if (depth == 0) return cons;
+        if (cons.getNextCons() == null) return cons;
+        return nextCons(cons.getNextCons() , --depth );
+    }
+
+    private int iterate(Character value, Cons cons , int counter) {
+        if (counter == cons.findLengths()) return calculateIndex(counter);
+        if (cons.getValue().equals(value)) return calculateIndex(counter) ;
+
+        return iterate(value, cons.getNextCons() , ++counter);
+    }
+
+    private int calculateIndex(int counter) {
+        /*
+        We started from -1
+        so we need to transform to normal index
+         */
+        return  ++counter;
+    }
+
+    public Cons findTheLatestInAlphabet(Cons cons) {
         if (cons.getNextCons() == null) return cons;
 
-        return valueIsEarlierInAlphabet(cons) ? findTheEarliestInAlphabet( change(cons) )
-                                              : findTheEarliestInAlphabet( cons.getNextCons() );
+        return valueIsLatestInAlphabet(cons) ? findTheLatestInAlphabet( change(cons) )
+                                             : findTheLatestInAlphabet( cons.getNextCons() );
     }
 
     private Cons change (Cons cons) {
@@ -110,27 +219,18 @@ public class Service {
         return new Cons(temp.getValue(), newCons);
     }
 
-    private boolean valueIsEarlierInAlphabet(Cons cons) {
+    private boolean valueIsLatestInAlphabet(Cons cons) {
         if (cons.getNextCons() == null) return false;
         final int res = cons.compareTo(cons.getNextCons());
 
-        if (res > 0) return false;
-        if (res < 0) return true;
+        if (res > 0) return true;
+        if (res < 0) return false;
 
         return false;
-
     }
 
-//    private Cons iterate(Cons cons, Character value) {
-//
-//        if (value.equals(cons.getValue())) return cons;
-//        if (!value.equals(cons.getValue()) && cons.getNextCons() == null) throw new RuntimeException("No value found");
-//        return iterate(cons.getNextCons(),value);
-//    }
 
-
-
-    //////
+    ////////////////////////////////////////
     // Utils
     private Cons convertText(Cons cons, String text) {
         if (StringUtils.isEmpty(text)) return cons;
